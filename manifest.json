@@ -1,0 +1,30 @@
+{
+  "name": "ECMO-RCP Dr. Negrín",
+  "short_name": "ECMO-RCP",
+  "description": "Algoritmo de decisión ECMO-RCP — H.U. Gran Canaria Dr. Negrín",
+  "start_url": "./ECMO-RCP_DrNegrin_v4.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "rgb(255,51,0)",
+  "icons": [
+    {
+      "src": "./icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
