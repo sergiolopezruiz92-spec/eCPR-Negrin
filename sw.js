@@ -1,7 +1,7 @@
 // Service Worker — ECMO-RCP Dr. Negrín
 // Permite uso offline una vez instalada la app
 
-var CACHE_NAME = 'ecmo-rcp-v4';
+var CACHE_NAME = 'ecmo-rcp-v5';
 var FILES = [
   './ECMO-RCP_DrNegrin_v4.html',
   './manifest.json',
