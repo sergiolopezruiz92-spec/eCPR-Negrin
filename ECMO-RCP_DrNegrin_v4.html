@@ -48,6 +48,25 @@ html,body{height:100%;background:#f4f4f4;}
 .te{background:rgb(255,51,0);color:#fff;border:1.5px solid rgb(200,30,0);}
 .tr{background:#37474f;color:#b0bec5;border:1.5px solid #546e7a;}
 
+/* AJUSTE DE CRONO */
+.tbox-wrap{position:relative;}
+.tajust-btn{position:absolute;top:4px;right:4px;background:rgba(255,255,255,.15);border:none;border-radius:5px;color:#aaa;font-size:10px;font-weight:600;padding:2px 6px;cursor:pointer;letter-spacing:.3px;}
+.tajust-btn:active{background:rgba(255,255,255,.25);}
+.ajust-panel{display:none;background:#1a1a1a;border-top:1px solid #333;padding:10px 12px 12px;}
+.ajust-panel.on{display:block;}
+.ajust-title{font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;text-align:center;}
+.ajust-btns{display:flex;gap:5px;justify-content:center;margin-bottom:8px;}
+.ajust-btn{background:#2a2a2a;border:1px solid #444;border-radius:8px;color:#fff;font-size:13px;font-weight:600;padding:8px 0;cursor:pointer;flex:1;text-align:center;}
+.ajust-btn:active{background:#444;}
+.ajust-btn.minus{color:#ff6b6b;}
+.ajust-btn.plus{color:#69f0ae;}
+.ajust-row{display:flex;gap:8px;align-items:center;}
+.ajust-input{flex:1;background:#2a2a2a;border:1px solid #444;border-radius:8px;color:#fff;font-size:16px;font-weight:600;padding:8px 10px;text-align:center;-webkit-appearance:none;}
+.ajust-input:focus{outline:none;border-color:rgb(255,51,0);}
+.ajust-apply{background:rgb(255,51,0);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:700;padding:9px 16px;cursor:pointer;white-space:nowrap;}
+.ajust-apply:active{opacity:.8;}
+.ajust-hint{font-size:10px;color:#666;text-align:center;margin-top:6px;}
+
 /* ALARM BANNER — triángulo grande */
 .alarm{display:none;background:#c62828;color:#fff;padding:0;text-align:center;cursor:pointer;}
 .alarm.on{display:block;}
@@ -165,8 +184,30 @@ html,body{height:100%;background:#f4f4f4;}
 
 <!-- TIMERS -->
 <div class="timers">
-  <div class="tbox"><div class="tlabel">⏱ Tiempo parada</div><div class="tval g" id="tp">00:00</div></div>
+  <div class="tbox tbox-wrap">
+    <div class="tlabel">⏱ Tiempo parada</div>
+    <div class="tval g" id="tp">00:00</div>
+    <button class="tajust-btn" onclick="toggleAjust()">Ajustar</button>
+  </div>
   <div class="tbox"><div class="tlabel">⚡ Código ECMO</div><div class="tval ecmo-idle" id="te">--:--</div></div>
+</div>
+
+<!-- PANEL AJUSTE CRONO -->
+<div class="ajust-panel" id="ajust-panel">
+  <div class="ajust-title">Ajustar tiempo de parada</div>
+  <div class="ajust-btns">
+    <button class="ajust-btn minus" onclick="ajustarMin(-5)">−5 min</button>
+    <button class="ajust-btn minus" onclick="ajustarMin(-2)">−2 min</button>
+    <button class="ajust-btn minus" onclick="ajustarMin(-1)">−1 min</button>
+    <button class="ajust-btn plus"  onclick="ajustarMin(+1)">+1 min</button>
+    <button class="ajust-btn plus"  onclick="ajustarMin(+2)">+2 min</button>
+    <button class="ajust-btn plus"  onclick="ajustarMin(+5)">+5 min</button>
+  </div>
+  <div class="ajust-row">
+    <input class="ajust-input" type="number" id="ajust-input" placeholder="min" min="0" max="120">
+    <button class="ajust-apply" onclick="ajustarDirecto()">Fijar tiempo</button>
+  </div>
+  <div class="ajust-hint">Escribe los minutos reales que lleva la parada y pulsa "Fijar tiempo"</div>
 </div>
 <div class="tbtns">
   <button class="tbtn ts" id="bs" onclick="manualStartParada()">
@@ -760,6 +801,37 @@ function resetFlow() {
 // ── Arranque automático al cargar la página ──────────
 autoStartParada();
 resetFlow();
+
+// ══════════════════════════════════════════
+// AJUSTE DE CRONO DE PARADA
+// ══════════════════════════════════════════
+function toggleAjust() {
+  var panel = document.getElementById('ajust-panel');
+  var isOpen = panel.classList.contains('on');
+  panel.classList.toggle('on');
+  if (!isOpen) {
+    var actual = pStart ? Math.floor((Date.now() - pStart) / 60000) : 0;
+    document.getElementById('ajust-input').value = actual;
+    document.getElementById('ajust-input').focus();
+  }
+}
+
+function ajustarMin(delta) {
+  if (!pStart) return;
+  pStart = pStart - (delta * 60 * 1000);
+  var nuevo = Math.max(0, Math.floor((Date.now() - pStart) / 60000));
+  document.getElementById('ajust-input').value = nuevo;
+  tick();
+}
+
+function ajustarDirecto() {
+  var mins = parseInt(document.getElementById('ajust-input').value);
+  if (isNaN(mins) || mins < 0) return;
+  pStart = Date.now() - (mins * 60 * 1000);
+  pStartDate = new Date(pStart);
+  tick();
+  document.getElementById('ajust-panel').classList.remove('on');
+}
 
 // ── Service Worker (PWA — uso offline) ───────────────
 if ('serviceWorker' in navigator) {
